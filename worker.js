@@ -1,3 +1,5 @@
+import { HTML_ADMIN } from "./admin.js";
+
 // mtv-tg：Telegram 公开频道资源聚合（轻量版）
 // 频道列表存 Workers KV，抓 t.me/s/<频道> 预览页，解析文字/磁力/网盘链接
 const KEY = "tg:channels";
@@ -92,6 +94,9 @@ export default {
     const json = (o, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...cors } });
     const token = request.headers.get("X-Token") || url.searchParams.get("token") || "";
 
+    if (url.pathname === "/admin" || url.pathname === "/") {
+      return new Response(HTML_ADMIN, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store, must-revalidate" } });
+    }
     if (url.pathname === "/api/channels") {
       if (token !== ADMIN_TOKEN(env)) return json({ error: "口令不对" }, 401);
       if (request.method === "GET") return json({ channels: await getChannels(env) });
